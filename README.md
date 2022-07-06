@@ -2,7 +2,7 @@
 
 Greetings! 
 
-Thank you for registering for our AERA course on **Analyzing NAEP and TIMSS Data Using R**. We are looking forward to meeting every one of you through the zoom webinar.  
+Thank you for registering the International Meeting of Psychometric Society short course, **Analyzing NAEP and TIMSS Data with Direct Estimation Using the R Packages EdSurvey and Dire**, which will be held from 10:00 am-5:30 pm on Monday, July 11th, 2022. We are very excited to welcome you all!  
 
 Before the training, please install: 
 
@@ -15,13 +15,13 @@ To initialize your system, open RStudio and run the following script:
 install.packages(c("Dire", "EdSurvey", "devtools"))
 devtools::install_github("American-Institutes-for-Research/edsurvey")
 ```
-To practice the achievement levels and gap sections with TIMSS datasets, download the datasets using the following script, once EdSurvey is successfully installed.
+To practice the EdSurvey sections with 2019 TIMSS datasets, download the datasets using the following script, once EdSurvey is successfully installed.
 ```
 library(EdSurvey)
-downloadTIMSS(years = c(2015, 2019), root = "~/")
+downloadTIMSS(years = 2019, root = "~/")
 ```
 Note: you may need to change the `root` argument depending on your system. Downloading the data files may take several hours to complete.
 
 Warm Regards, 
 
-Emmanuel, Ting, and Paul
+Ting, Paul and Emmanuel
