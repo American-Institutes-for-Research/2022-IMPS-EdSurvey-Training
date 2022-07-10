@@ -289,6 +289,7 @@ Outline of EdSurvey Workshop - Part 2
 
 7. Hands-on practice
 
+
 ---
 
 Data Processing
@@ -298,12 +299,13 @@ Data Processing
 
 
 ```r
+#if you do not have 2.7.9005, uncomment this to isntall it
+#devtools::install_github(&quot;American-Institutes-for-Research/edsurvey&quot;)
 # to load the package
 library(EdSurvey)
-library(Dire)
 ```
 
-Italian TIMSS 2019 data:
+NAEP 2005 Math data and Italian TIMSS 2019 data:
 
 
 ```r
@@ -344,8 +346,8 @@ Summary statistics
 Summary statistics
 ========================================================
 
-For a continuous variable (i.e., mmat Math score):
-- For TIMMS data and other datasets that have default weight variable, `summary2` produces weighted statistics by default. If specified, `variable` is a plausible value and weight option is selected, `summary2` statistics account for both plausible value pooling and weighting.   
+For a continuous variable (i.e., mmat Math scale score):
+- For TIMMS data and other datasets that have default weight variable, `summary2` produces weighted statistics. When specifying `variable` as a scale name (e.g., `mmat`), `summary2` statistics estimated the summary statistics for the scale accounting for plausible values pooling and weighting.   
 
 
 ```r
@@ -354,8 +356,10 @@ summary2(ita, &quot;mmat&quot;)
 
 ```
 ## Estimates are weighted using the weight variable &#39;totwgt&#39;
-##   Variable    N Weighted N     Min.  1st Qu.   Median     Mean  3rd Qu.     Max.       SD NA&#39;s Zero weights
-## 1     mmat 3619   533957.3 225.9493 448.4877 498.6297 497.4825 548.2803 730.1051 71.29584    0            0
+##   Variable    N Weighted N     Min.  1st Qu.   Median     Mean  3rd Qu.     Max.       SD
+## 1     mmat 3619   533957.3 225.9493 448.4877 498.6297 497.4825 548.2803 730.1051 71.29584
+##   NA&#39;s Zero weights
+## 1    0            0
 ```
 
 ---
@@ -364,7 +368,7 @@ Summary statistics
 ========================================================
 
 For a continuous variable (i.e., `mmat` Math score):
-- By specifying `weightVar = NULL`, the function prints out unweighted descriptive statistics for `variable`, or each plausible value if `variable` is a plausible value name.    
+- To print out unweighted descriptive statistics for each plausible value or a continuous variable, specify `weightVar = NULL`.    
 
 
 ```r
@@ -386,10 +390,7 @@ summary2(ita, &quot;mmat&quot;, weightVar = NULL)
 Summary statistics
 ========================================================
 
-For a categorical variable (i.e., frequency of students talking about studies at home):
-
-- By default, `omittedLevels` is set to `FALSE`. That is, the function includes omitted levels of the variable `btbm19cc.math` in the output statistics.    
-
+For a categorical variable (i.e., frequency of teacher discuss homework in class):
 
 
 ```r
@@ -397,8 +398,8 @@ summary2(ita, &quot;btbm19cc.math&quot;, weight=&quot;matwgt&quot;)
 ```
 
 ```
-## Warning in calcEdsurveyTable(formula, data, weightVar, jrrIMax, pctAggregationLevel, : Removing 3619 rows with 0 weight from
-## analysis.
+## Warning in calcEdsurveyTable(formula, data, weightVar, jrrIMax, pctAggregationLevel, :
+## Removing 3619 rows with 0 weight from analysis.
 ```
 
 ```
@@ -410,19 +411,21 @@ summary2(ita, &quot;btbm19cc.math&quot;, weight=&quot;matwgt&quot;)
 ## 4   NEVER OR ALMOST NEVER   36   5297.511        0.9921225           0.7250563
 ```
 
+- By default, `omittedLevels` is set to `FALSE`. That is, the function includes omitted levels of the variable `btbm19cc.math` (discuss homework) in the output statistics. 
 
 ---
 
 Summary statistics
 ========================================================
 
-For a categorical variable (i.e., frequency of students talking about studies at home):
+For a categorical variable (i.e., frequency of teacher discuss homework in class):
 - By specifying `omittedLevels = TRUE`, the function removes omitted levels out of the output statistics.   
 
 
 
 ```r
-summary2(ita, &quot;btbm19cc.math&quot;,  weightVar=&quot;matwgt&quot;, omittedLevels = TRUE)
+summary2(ita, &quot;btbm19cc.math&quot;,  weightVar=&quot;matwgt&quot;,
+         omittedLevels = TRUE)
 ```
 
 ```
@@ -441,7 +444,7 @@ Cross tabulation
 
 **`edsurveyTable()`:** creates a summary table of outcome and categorical variables. There are 3 important arguments as followed: 
 - `formula`: typically written as `a ~ b + c`, in which:
-  - `a`: a continuous variable (optional) that the function will return weighted mean on.
+  - `a`: a continuous variable (optional) that the function will return weighted mean of.
   - `b` and `c`: categorical variable(s) that the function will run cross-tabulation on; multiple crosstab 
   categorical variables can be separated using `+` symbol.  
 - `data`: an `EdSurvey` object
@@ -452,10 +455,9 @@ Cross tabulation
 Cross tabulation
 ========================================================
 
-- Summary table of NAEP mmat mathematics performance scale scores (`mmat`) of 8th grade students by two student factors:
-  - `dsex`: gender
-  - `bsbg01`: sex of student
-  - `btbg02.math`: sex of teacher
+- Summary table of TIMSS `mmat` mathematics performance scale scores of 8th grade students by two contextual factors:
+  - `bsbg01`: gender of student
+  - `btbg02.math`: gender of math teacher
 
 
 ```r
@@ -468,19 +470,19 @@ es1 &lt;- edsurveyTable(mmat ~ bsbg01 + btbg02.math,
 Cross tabulation
 ========================================================
 
-- `pctAggregationLevel` is by default set to `NULL` (or `1`). That is, the `PCT` column adds up to 100 within each level of the first categorical variable `dsex`. 
+- `pctAggregationLevel` is by default set to `1`. That is, the `PCT` column adds up to 100 within each level of the first categorical variable `bsbg01`. 
 
-&lt;div style=&quot;border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:30%; overflow-x: scroll; width:100%; &quot;&gt;&lt;table class=&quot;table&quot; style=&quot;font-size: 16px; margin-left: auto; margin-right: auto;&quot;&gt;
+&lt;table class=&quot;table&quot; style=&quot;font-size: 16px; margin-left: auto; margin-right: auto;&quot;&gt;
  &lt;thead&gt;
   &lt;tr&gt;
-   &lt;th style=&quot;text-align:left;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; bsbg01 &lt;/th&gt;
-   &lt;th style=&quot;text-align:left;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; btbg02.math &lt;/th&gt;
-   &lt;th style=&quot;text-align:right;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; N &lt;/th&gt;
-   &lt;th style=&quot;text-align:right;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; WTD_N &lt;/th&gt;
-   &lt;th style=&quot;text-align:right;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; PCT &lt;/th&gt;
-   &lt;th style=&quot;text-align:right;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; SE(PCT) &lt;/th&gt;
-   &lt;th style=&quot;text-align:right;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; MEAN &lt;/th&gt;
-   &lt;th style=&quot;text-align:right;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; SE(MEAN) &lt;/th&gt;
+   &lt;th style=&quot;text-align:left;&quot;&gt; bsbg01 &lt;/th&gt;
+   &lt;th style=&quot;text-align:left;&quot;&gt; btbg02.math &lt;/th&gt;
+   &lt;th style=&quot;text-align:right;&quot;&gt; N &lt;/th&gt;
+   &lt;th style=&quot;text-align:right;&quot;&gt; WTD_N &lt;/th&gt;
+   &lt;th style=&quot;text-align:right;&quot;&gt; PCT &lt;/th&gt;
+   &lt;th style=&quot;text-align:right;&quot;&gt; SE(PCT) &lt;/th&gt;
+   &lt;th style=&quot;text-align:right;&quot;&gt; MEAN &lt;/th&gt;
+   &lt;th style=&quot;text-align:right;&quot;&gt; SE(MEAN) &lt;/th&gt;
   &lt;/tr&gt;
  &lt;/thead&gt;
 &lt;tbody&gt;
@@ -525,7 +527,7 @@ Cross tabulation
    &lt;td style=&quot;text-align:right;&quot;&gt; 8.086852 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
-&lt;/table&gt;&lt;/div&gt;
+&lt;/table&gt;
 
 ---
 
@@ -541,17 +543,17 @@ es2 &lt;- edsurveyTable(mmat ~ bsbg01 + btbg02.math, data = ita,
 ```
 
 
-&lt;div style=&quot;border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:75%; overflow-x: scroll; width:100%; &quot;&gt;&lt;table class=&quot;table&quot; style=&quot;font-size: 16px; margin-left: auto; margin-right: auto;&quot;&gt;
+&lt;table class=&quot;table&quot; style=&quot;font-size: 16px; margin-left: auto; margin-right: auto;&quot;&gt;
  &lt;thead&gt;
   &lt;tr&gt;
-   &lt;th style=&quot;text-align:left;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; bsbg01 &lt;/th&gt;
-   &lt;th style=&quot;text-align:left;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; btbg02.math &lt;/th&gt;
-   &lt;th style=&quot;text-align:right;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; N &lt;/th&gt;
-   &lt;th style=&quot;text-align:right;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; WTD_N &lt;/th&gt;
-   &lt;th style=&quot;text-align:right;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; PCT &lt;/th&gt;
-   &lt;th style=&quot;text-align:right;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; SE(PCT) &lt;/th&gt;
-   &lt;th style=&quot;text-align:right;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; MEAN &lt;/th&gt;
-   &lt;th style=&quot;text-align:right;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; SE(MEAN) &lt;/th&gt;
+   &lt;th style=&quot;text-align:left;&quot;&gt; bsbg01 &lt;/th&gt;
+   &lt;th style=&quot;text-align:left;&quot;&gt; btbg02.math &lt;/th&gt;
+   &lt;th style=&quot;text-align:right;&quot;&gt; N &lt;/th&gt;
+   &lt;th style=&quot;text-align:right;&quot;&gt; WTD_N &lt;/th&gt;
+   &lt;th style=&quot;text-align:right;&quot;&gt; PCT &lt;/th&gt;
+   &lt;th style=&quot;text-align:right;&quot;&gt; SE(PCT) &lt;/th&gt;
+   &lt;th style=&quot;text-align:right;&quot;&gt; MEAN &lt;/th&gt;
+   &lt;th style=&quot;text-align:right;&quot;&gt; SE(MEAN) &lt;/th&gt;
   &lt;/tr&gt;
  &lt;/thead&gt;
 &lt;tbody&gt;
@@ -596,7 +598,7 @@ es2 &lt;- edsurveyTable(mmat ~ bsbg01 + btbg02.math, data = ita,
    &lt;td style=&quot;text-align:right;&quot;&gt; 8.086852 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
-&lt;/table&gt;&lt;/div&gt;
+&lt;/table&gt;
 
 
 ---
@@ -604,7 +606,7 @@ es2 &lt;- edsurveyTable(mmat ~ bsbg01 + btbg02.math, data = ita,
 Cross tabulation
 ========================================================
 
-- Related Documentation - [EdSurvey-LaTeXtables.pdf](https://www.air.org/sites/default/files/EdSurvey-LaTeXtables.pdf), [Chap 5.4.1, EdSurvey Book](https://naep-research.airprojects.org/Portals/0/EdSurvey_A_Users_Guide/_book/understandingData.html#edsurveytable)
+- Related Documentation [Chap 5.4.1, EdSurvey Book](https://naep-research.airprojects.org/Portals/0/EdSurvey_A_Users_Guide/_book/understandingData.html#edsurveytable)
 
 ---
 
@@ -614,7 +616,7 @@ Self-Reflection - edsurveyTable
 **Ask yourself:** Use EdSurvey functions to create a summary table using `edsurveyTable` with these parameters:
 
 - overall math performance across subscales (`mmat`)
-- variable that has to do with student sex
+- variable that has to do with student gender/sex
 - variable that has to do with opinions about math
 
 ---
@@ -624,6 +626,7 @@ Self-Reflection - edsurveyTable
 
 Example scenario result:
 
+.codeScroll25[
 
 ```r
 edexercise &lt;- edsurveyTable(mmat ~ bsbg01 + bsdgslm,
@@ -631,8 +634,8 @@ edexercise &lt;- edsurveyTable(mmat ~ bsbg01 + bsdgslm,
 ```
 
 ```
-## Warning in calcEdsurveyTable(formula, data, weightVar, jrrIMax, pctAggregationLevel, : Removing 3599 rows with 0 weight from
-## analysis.
+## Warning in calcEdsurveyTable(formula, data, weightVar, jrrIMax, pctAggregationLevel, :
+## Removing 3599 rows with 0 weight from analysis.
 ```
 
 ```r
@@ -653,14 +656,22 @@ edexercise
 ## 
 ## 
 ## Summary Table:
-##  bsbg01                             bsdgslm   N     WTD_N      PCT  SE(PCT)     MEAN SE(MEAN)
-##    GIRL VERY MUCH LIKE LEARNING MATHEMATICS 272  41074.08 15.53763 1.152302 537.6333 4.810545
-##    GIRL  SOMEWHAT LIKE LEARNING MATHEMATICS 533  81260.83 30.73960 1.414971 504.9082 3.965972
-##    GIRL    DO NOT LIKE LEARNING MATHEMATICS 978 142017.32 53.72276 1.575686 470.7021 3.483710
-##     BOY VERY MUCH LIKE LEARNING MATHEMATICS 302  46521.15 17.41820 1.013333 535.5931 5.644903
-##     BOY  SOMEWHAT LIKE LEARNING MATHEMATICS 673  99529.98 37.26548 1.372512 519.4988 3.972006
-##     BOY    DO NOT LIKE LEARNING MATHEMATICS 841 121032.45 45.31632 1.666225 478.4698 3.632497
+##   bsbg01                             bsdgslm   N     WTD_N      PCT  SE(PCT)     MEAN
+## 1   GIRL VERY MUCH LIKE LEARNING MATHEMATICS 272  41074.08 15.53763 1.152302 537.6333
+## 2   GIRL  SOMEWHAT LIKE LEARNING MATHEMATICS 533  81260.83 30.73960 1.414971 504.9082
+## 3   GIRL    DO NOT LIKE LEARNING MATHEMATICS 978 142017.32 53.72276 1.575686 470.7021
+## 4    BOY VERY MUCH LIKE LEARNING MATHEMATICS 302  46521.15 17.41820 1.013333 535.5931
+## 5    BOY  SOMEWHAT LIKE LEARNING MATHEMATICS 673  99529.98 37.26548 1.372512 519.4988
+## 6    BOY    DO NOT LIKE LEARNING MATHEMATICS 841 121032.45 45.31632 1.666225 478.4698
+##   SE(MEAN)
+## 1 4.810545
+## 2 3.965972
+## 3 3.483710
+## 4 5.644903
+## 5 3.972006
+## 6 3.632497
 ```
+]
 
 ---
 
@@ -702,15 +713,16 @@ Formula notation is typically written as:
 - The `~` separates the response variable on the left from the predictor variables on the right.
 - The `+` sign separates the predictor variables.
 &lt;br&gt;
- 
+
 
 ---
 
 Regressions with PVs - lm.sdf()
 ========================================================
 
-$$ {\mathrm [math]} = \beta_0 + \beta_1 {\mathrm [students\ like\ learning\ math]} + \epsilon $$
-.codeScroll20[
+$$ [math] = \beta_0 + \beta_1  [students\ like\ learning\ math] + \epsilon $$
+
+.codeScroll25[
 
 ```r
 lm1 &lt;- lm.sdf(mmat ~ bsbg01 + bsdgslm,
@@ -731,11 +743,16 @@ summary(lm1)
 ## n used: 3599
 ## 
 ## Coefficients:
-##                                               coef       se        t     dof  Pr(&gt;|t|)    
-## (Intercept)                               532.0568   4.2518 125.1370 114.754 &lt; 2.2e-16 ***
-## bsbg01BOY                                   8.4598   2.8272   2.9922 162.607  0.003201 ** 
-## bsdgslmSOMEWHAT LIKE LEARNING MATHEMATICS -23.7735   4.3186  -5.5049  67.893  6.11e-07 ***
-## bsdgslmDO NOT LIKE LEARNING MATHEMATICS   -61.6732   4.0109 -15.3764  81.069 &lt; 2.2e-16 ***
+##                                               coef       se        t     dof  Pr(&gt;|t|)
+## (Intercept)                               532.0568   4.2518 125.1370 114.754 &lt; 2.2e-16
+## bsbg01BOY                                   8.4598   2.8272   2.9922 162.607  0.003201
+## bsdgslmSOMEWHAT LIKE LEARNING MATHEMATICS -23.7735   4.3186  -5.5049  67.893  6.11e-07
+## bsdgslmDO NOT LIKE LEARNING MATHEMATICS   -61.6732   4.0109 -15.3764  81.069 &lt; 2.2e-16
+##                                              
+## (Intercept)                               ***
+## bsbg01BOY                                 ** 
+## bsdgslmSOMEWHAT LIKE LEARNING MATHEMATICS ***
+## bsdgslmDO NOT LIKE LEARNING MATHEMATICS   ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
@@ -762,6 +779,8 @@ Self-Reflection - lm.sdf
 Scenario Result:
 
 
+.codeScroll25[
+
 ```r
 lmexercise2 &lt;- lm.sdf(mmat ~ bsbg04 + btbg06e.math,
                       weightVar = &#39;matwgt&#39;, data = ita)
@@ -781,21 +800,32 @@ summary(lmexercise2)
 ## n used: 3520
 ## 
 ## Coefficients:
-##                                                                  coef       se        t      dof Pr(&gt;|t|)    
-## (Intercept)                                                  478.6278  13.4348 35.62605  15.9493  &lt; 2e-16 ***
-## bsbg04ENOUGH TO FILL ONE SHELF (11-25 BOOKS)                  16.7020   5.3519  3.12073 151.7022  0.00216 ** 
-## bsbg04ENOUGH TO FILL ONE BOOKCASE (26-100 BOOKS)              41.5650   4.3170  9.62820 157.9712  &lt; 2e-16 ***
-## bsbg04ENOUGH TO FILL TWO BOOKCASES (101-200 BOOKS)            58.0727   5.7395 10.11801 125.2977  &lt; 2e-16 ***
-## bsbg04ENOUGH TO FILL THREE OR MORE BOOKCASES (MORE THAN 200)  68.8173   5.2939 12.99936 119.5333  &lt; 2e-16 ***
-## btbg06e.mathHIGH                                             -11.3010  12.1538 -0.92983  18.6525  0.36434    
-## btbg06e.mathMEDIUM                                           -17.7376  12.5522 -1.41310  14.1657  0.17922    
-## btbg06e.mathLOW                                              -24.6971  15.1291 -1.63242  17.2059  0.12076    
-## btbg06e.mathVERY LOW                                         -26.8388  57.6234 -0.46576   5.2522  0.66006    
+##                                                                  coef       se        t
+## (Intercept)                                                  478.6278  13.4348 35.62605
+## bsbg04ENOUGH TO FILL ONE SHELF (11-25 BOOKS)                  16.7020   5.3519  3.12073
+## bsbg04ENOUGH TO FILL ONE BOOKCASE (26-100 BOOKS)              41.5650   4.3170  9.62820
+## bsbg04ENOUGH TO FILL TWO BOOKCASES (101-200 BOOKS)            58.0727   5.7395 10.11801
+## bsbg04ENOUGH TO FILL THREE OR MORE BOOKCASES (MORE THAN 200)  68.8173   5.2939 12.99936
+## btbg06e.mathHIGH                                             -11.3010  12.1538 -0.92983
+## btbg06e.mathMEDIUM                                           -17.7376  12.5522 -1.41310
+## btbg06e.mathLOW                                              -24.6971  15.1291 -1.63242
+## btbg06e.mathVERY LOW                                         -26.8388  57.6234 -0.46576
+##                                                                   dof Pr(&gt;|t|)    
+## (Intercept)                                                   15.9493  &lt; 2e-16 ***
+## bsbg04ENOUGH TO FILL ONE SHELF (11-25 BOOKS)                 151.7022  0.00216 ** 
+## bsbg04ENOUGH TO FILL ONE BOOKCASE (26-100 BOOKS)             157.9712  &lt; 2e-16 ***
+## bsbg04ENOUGH TO FILL TWO BOOKCASES (101-200 BOOKS)           125.2977  &lt; 2e-16 ***
+## bsbg04ENOUGH TO FILL THREE OR MORE BOOKCASES (MORE THAN 200) 119.5333  &lt; 2e-16 ***
+## btbg06e.mathHIGH                                              18.6525  0.36434    
+## btbg06e.mathMEDIUM                                            14.1657  0.17922    
+## btbg06e.mathLOW                                               17.2059  0.12076    
+## btbg06e.mathVERY LOW                                           5.2522  0.66006    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Multiple R-squared: 0.1277
 ```
+]
 
 ---
 
@@ -845,19 +875,6 @@ You create total time on science
 
 ---
 
-Process Data Manipulation
-========================================================
-
-Create variables for the standard deviation of time on the tests.
-
-
-```r
-ita$sdTimeMat &lt;- apply(ita[,vnm], 1, sd, na.rm=TRUE)/60
-ita$sdTimeSci &lt;- apply(ita[,vns], 1, sd, na.rm=TRUE)/60
-```
-
----
-
 Direct Estimation with EdSurvey - mml.sdf
 ========================================================
 
@@ -865,12 +882,7 @@ This is the model we want to fit.
 
 ```r
 lmA &lt;- lm.sdf(mmat ~ bsbg01 + totalTimeMat + totalTimeSci,
-              data=ita, weightVar=&quot;matwgt&quot;)
-```
-
-```
-## Warning in calc.lm.sdf(formula = formula, data = data, weightVar = weightVar, : Removing 3613 rows with nonpositive weight from
-## analysis.
+              data=ita, weightVar=&quot;totwgt&quot;)
 ```
 
 - **formula**: this is the conditioning model
@@ -900,7 +912,7 @@ summary(lmA)
 ## 
 ## Formula: mmat ~ bsbg01 + totalTimeMat + totalTimeSci
 ## 
-## Weight variable: &#39;matwgt&#39;
+## Weight variable: &#39;totwgt&#39;
 ## Variance method: jackknife
 ## JK replicates: 150
 ## Plausible values: 5
@@ -933,24 +945,59 @@ Fit this with direct estimation
 ita &lt;- setTIMSSScoreDict(ita, &#39;mmat&#39;)
 mmlA &lt;- mml.sdf(mmat ~ bsbg01 + totalTimeMat + totalTimeSci,
                 data=ita,
-                weightVar=&quot;matwgt&quot;)
+                weightVar=&quot;totwgt&quot;)
 ```
 
 ```
-## Removing 12 rows with NAs from analysis.
+## Removing 6 rows with NAs from analysis.
+```
+
+```r
+summary(mmlA)
 ```
 
 ```
-## Removing 3613 rows with nonpositive weight from analysis.
+## Warning in nearPD2(getHessian(object$lnlf, object$coefficients), warn = &quot;Apparently
+## singular Hessian matrix, standard error estimates are likely unstable.&quot;): Apparently
+## singular Hessian matrix, standard error estimates are likely unstable.
 ```
 
-The call is very similar
+```
+## Call:
+## mml.sdf(formula = mmat ~ bsbg01 + totalTimeMat + totalTimeSci, 
+##     data = ita, weightVar = &quot;totwgt&quot;)
+## Summary Call:
+## summary.mml.sdf(object = mmlA)
+## 
+## Summary:
+##                Estimate     StdErr    t.value    dof  Pr(&gt;|t|)    
+## (Intercept)  343.768229  13.325335  25.798092 52.947 &lt; 2.2e-16 ***
+## bsbg01BOY     15.851076   2.903182   5.459897 52.504  1.32e-06 ***
+## totalTimeMat   3.707497   0.299541  12.377274 63.125 &lt; 2.2e-16 ***
+## totalTimeSci   0.035809   0.282846   0.126602 66.448    0.8996    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual Variance Estimate:
+##               Estimate   StdErr
+## Population SD 66.56305 1.172884
+## 
+## Convergence = converged
+## Iterations = 36
+## LogLike = -8746388.64
+## Observations = 3613
+## Weighted observations = 533220.27
+```
 
+The call is intentionally very similar to an `lm.sdf` call
 
 ---
 
 Direct Estimation with EdSurvey - mml.sdf
 ========================================================
+
+Look at the results
+
 .codeScroll25[
 
 ```r
@@ -958,36 +1005,100 @@ summary(mmlA)
 ```
 
 ```
-## Warning in nearPD2(getHessian(object$lnlf, object$coefficients), warn = &quot;Apparently singular Hessian matrix, standard error
-## estimates are likely unstable.&quot;): Apparently singular Hessian matrix, standard error estimates are likely unstable.
+## Warning in nearPD2(getHessian(object$lnlf, object$coefficients), warn = &quot;Apparently
+## singular Hessian matrix, standard error estimates are likely unstable.&quot;): Apparently
+## singular Hessian matrix, standard error estimates are likely unstable.
 ```
 
 ```
 ## Call:
 ## mml.sdf(formula = mmat ~ bsbg01 + totalTimeMat + totalTimeSci, 
-##     data = sdf, weightVar = &quot;matwgt&quot;)
+##     data = ita, weightVar = &quot;matwgt&quot;)
 ## Summary Call:
-## summary.edSurveyMML(object = mmlA)
+## summary.mml.sdf(object = mmlA)
 ## 
 ## Summary:
-##                Estimate     StdErr t.value
-## (Intercept)  343.768229  13.325334 25.7981
-## bsbg01BOY     15.851076   2.903183  5.4599
-## totalTimeMat   3.707497   0.299541 12.3773
-## totalTimeSci   0.035809   0.282846  0.1266
+##                Estimate     StdErr    t.value    dof  Pr(&gt;|t|)    
+## (Intercept)  343.768229  13.325335  25.798092 52.947 &lt; 2.2e-16 ***
+## bsbg01BOY     15.851076   2.903182   5.459897 52.504  1.32e-06 ***
+## totalTimeMat   3.707497   0.299541  12.377274 63.125 &lt; 2.2e-16 ***
+## totalTimeSci   0.035809   0.282846   0.126602 66.448    0.8996    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Residual Variance Estimate:
 ##               Estimate   StdErr
 ## Population SD 66.56305 1.172884
 ## 
-## Convergence = 
-## Iterations = 35
+## Convergence = converged
+## Iterations = 36
 ## LogLike = -8746388.64
 ## Observations = 3613
 ## Weighted observations = 533220.27
 ```
 ]
 
+The call is intentionally very similar to an `lm.sdf` call
+
+
+---
+
+Direct Estimation with EdSurvey - mml.sdf
+========================================================
+Fix total time, it is too large to estimate accurately
+
+
+```r
+ita$totalTimeMatZ &lt;- (ita$totalTimeMat - mean(ita$totalTimeMat))/sd(ita$totalTimeMat)
+ita$totalTimeSciZ &lt;- (ita$totalTimeSci - mean(ita$totalTimeSci))/sd(ita$totalTimeSci)
+mmlB &lt;- mml.sdf(mmat ~ bsbg01 + totalTimeMatZ + totalTimeSciZ,
+                data=ita,
+                weightVar=&quot;totwgt&quot;)
+```
+
+```
+## Removing 6 rows with NAs from analysis.
+```
+
+---
+
+Direct Estimation with EdSurvey - mml.sdf
+========================================================
+Summary of new output
+
+.codeScroll25[
+
+```r
+summary(mmlB)
+```
+
+```
+## Call:
+## mml.sdf(formula = mmat ~ bsbg01 + totalTimeMatZ + totalTimeSciZ, 
+##     data = ita, weightVar = &quot;matwgt&quot;)
+## Summary Call:
+## summary.mml.sdf(object = mmlB)
+## 
+## Summary:
+##                Estimate    StdErr   t.value    dof  Pr(&gt;|t|)    
+## (Intercept)   489.65540   2.69458 181.71848 69.723 &lt; 2.2e-16 ***
+## bsbg01BOY      15.85108   2.90318   5.45990 52.504  1.32e-06 ***
+## totalTimeMatZ  24.97952   2.01820  12.37714 63.125 &lt; 2.2e-16 ***
+## totalTimeSciZ   0.25259   1.99514   0.12660 66.448    0.8996    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual Variance Estimate:
+##               Estimate   StdErr
+## Population SD 66.56305 1.172883
+## 
+## Convergence = converged
+## Iterations = 17
+## LogLike = -8746388.64
+## Observations = 3613
+## Weighted observations = 533220.27
+```
+]
 
 ---
 
@@ -1062,16 +1173,80 @@ Draw PVs with EdSurvey - drawPVs
 
 - The `drawPVs` requires two data sources: 
 
-  - an `edsurvey.data.frame` (in this case, the primer data `sdf`), and 
-
   - a fit from a call to `mml.sdf` or a `summary` of `mml.sdf` call (i.e., `mmlA` from the example). 
 
+  - an `edsurvey.data.frame` (in this case, the primer data `sdf`), and 
+
 - The `npv` argument specifies the number of PVs for the scale. 
+
 .codeScroll15[
 
 ```r
-require(Dire)
-ita2 &lt;- drawPVs(ita, mmlA, npv=5L)
+ita2 &lt;- drawPVs(mmlB, data=ita, npv=5L)
+ita2
+```
+
+```
+## edsurvey.data.frame for 2019 TIMSS (Mathematics and Science) in Italy
+## Dimensions: 7238 rows and 4063 columns.
+## 
+## There are 4 full sample weights in this edsurvey.data.frame:
+##   &#39;totwgt&#39; with 150 JK replicate weights (the default).
+## 
+##   &#39;tchwgt&#39; with 150 JK replicate weights.
+## 
+##   &#39;matwgt&#39; with 150 JK replicate weights.
+## 
+##   &#39;sciwgt&#39; with 150 JK replicate weights.
+## 
+## 
+## There are 17 subject scale(s) or subscale(s) in this edsurvey.data.frame:
+## &#39;mmat&#39; subject scale or subscale with 5 plausible values (the default).
+## 
+## &#39;ssci&#39; subject scale or subscale with 5 plausible values.
+## 
+## &#39;malg&#39; subject scale or subscale with 5 plausible values.
+## 
+## &#39;mapp&#39; subject scale or subscale with 5 plausible values.
+## 
+## &#39;mdat&#39; subject scale or subscale with 5 plausible values.
+## 
+## &#39;mgeo&#39; subject scale or subscale with 5 plausible values.
+## 
+## &#39;mkno&#39; subject scale or subscale with 5 plausible values.
+## 
+## &#39;mnum&#39; subject scale or subscale with 5 plausible values.
+## 
+## &#39;mrea&#39; subject scale or subscale with 5 plausible values.
+## 
+## &#39;sapp&#39; subject scale or subscale with 5 plausible values.
+## 
+## &#39;sbio&#39; subject scale or subscale with 5 plausible values.
+## 
+## &#39;sche&#39; subject scale or subscale with 5 plausible values.
+## 
+## &#39;sear&#39; subject scale or subscale with 5 plausible values.
+## 
+## &#39;skno&#39; subject scale or subscale with 5 plausible values.
+## 
+## &#39;sphy&#39; subject scale or subscale with 5 plausible values.
+## 
+## &#39;srea&#39; subject scale or subscale with 5 plausible values.
+## 
+## &#39;mmat_dire&#39; subject scale or subscale with 5 plausible values.
+## 
+## 
+## Omitted Levels: &#39;Multiple&#39;, &#39;NA&#39;, &#39;OMITTED&#39;, &#39;OMITTED OR INVALID&#39;, &#39;OMITTED
+##                 (BLANK ONLY)&#39;, &#39;BLANK(OMITTED)&#39;, &#39;BLANK(MISSING)&#39;,
+##                 &#39;BLANK(MISS)&#39;, &#39;MIS.&#39;, &#39;MISS.&#39;, &#39;N. REA.&#39;, &#39;N.REA.&#39;, &#39;N. ADM.&#39;,
+##                 &#39;N. ADMIN.&#39;, &#39;NOT ADMIN&#39;, &#39;NOT APPL&#39;, &#39;NOT ADMINISTERED&#39;, &#39;NOT
+##                 REACHED&#39;, &#39;NOT ADMIN.&#39;, &#39;NOT APPLICABLE&#39;, &#39;LOGICALLY NOT
+##                 APPLICABLE&#39;, &#39;MISSING&#39;, and &#39;(Missing)&#39;
+## Achievement Levels:
+## Low International Benchmark: 400
+## Intermediate International Benchmark: 475
+## High International Benchmark: 550
+## Advanced International Benchmark: 625
 ```
 ]
 ---
@@ -1104,14 +1279,14 @@ summary(lm2)
 ## 
 ## Coefficients:
 ##                    coef         se        t    dof  Pr(&gt;|t|)    
-## (Intercept)  344.411456  11.806685 29.17089 108.00 &lt; 2.2e-16 ***
-## bsbg01BOY     15.606411   2.720493  5.73661 141.19 5.653e-08 ***
-## totalTimeMat   3.660093   0.272307 13.44107 129.38 &lt; 2.2e-16 ***
-## totalTimeSci   0.069627   0.271832  0.25614 140.71    0.7982    
+## (Intercept)  343.406169  11.191724 30.68394 123.82 &lt; 2.2e-16 ***
+## bsbg01BOY     15.263613   2.960360  5.15600 124.17 9.665e-07 ***
+## totalTimeMat   3.698055   0.277211 13.34021 131.27 &lt; 2.2e-16 ***
+## totalTimeSci   0.060946   0.272798  0.22341 161.22    0.8235    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Multiple R-squared: 0.1275
+## Multiple R-squared: 0.128
 ```
 ]
 ---
@@ -1143,10 +1318,10 @@ summary(lm1b)$coefmat
 
 ```
 ##                      coef         se          t      dof     Pr(&gt;|t|)
-## (Intercept)  344.41145615 11.8066846 29.1708865 108.0005 0.000000e+00
-## bsbg01BOY     15.60641136  2.7204928  5.7366119 141.1863 5.653352e-08
-## totalTimeMat   3.66009322  0.2723067 13.4410711 129.3811 0.000000e+00
-## totalTimeSci   0.06962657  0.2718316  0.2561387 140.7101 7.982178e-01
+## (Intercept)  343.40616901 11.1917245 30.6839370 123.8157 0.000000e+00
+## bsbg01BOY     15.26361273  2.9603600  5.1559989 124.1663 9.665314e-07
+## totalTimeMat   3.69805547  0.2772113 13.3402057 131.2731 0.000000e+00
+## totalTimeSci   0.06094613  0.2727984  0.2234109 161.2173 8.234986e-01
 ```
 
 ---
@@ -1182,8 +1357,9 @@ summary(mmlExercise1)
 ```
 
 ```
-## Warning in getVarTaylor(object, H_B_prime, strataVar, PSUVar, singletonFix): Of the 75 strata, 2 strata have only one PSU. All
-## strata with only one PSU are excluded from variance estimation. See the &quot;singletonFix&quot; argument for other options.
+## Warning in getVarTaylor(object, H_B_prime, strataVar, PSUVar, singletonFix): Of the
+## 75 strata, 2 strata have only one PSU. All strata with only one PSU are excluded from
+## variance estimation. See the &quot;singletonFix&quot; argument for other options.
 ```
 
 ```
