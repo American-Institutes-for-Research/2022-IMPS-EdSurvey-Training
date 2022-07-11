@@ -39,7 +39,7 @@ kable(es2$data, format="html") %>%
 ############################################### Slide 16	
 ############################################### Slide 17	
 edexercise <- edsurveyTable(mmat ~ bsbg01 + bsdgslm,	
-                            weightVar = 'matwgt', data = ita)	
+                            weightVar = 'totwgt', data = ita)	
 edexercise	
 ############################################### Slide 18	
 ############################################### Slide 19	
